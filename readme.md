@@ -21,8 +21,9 @@
 ###运行
 1. Clone 或者 Dowanload Project
 2. 确保有node和npm，Terminal输入npm install
-3. 打开浏览器输入http://localhost:3000
-4. 大量文件使用CDN访问，请确保联网
+3. Terminal输入node server.js
+4. 打开浏览器输入http://localhost:3000
+5. 大量文件使用CDN访问，请确保联网
 
 
 ===========================================================================================================
