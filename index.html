@@ -1,0 +1,165 @@
+<!doctype html>
+<html lang="en" ng-app="TaxCalApp">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <!-- Latest compiled and minified CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css"
+          integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7" crossorigin="anonymous">
+
+    <!-- Optional theme -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap-theme.min.css"
+          integrity="sha384-fLW2N01lMqjakBkx3l/M9EahuwpSfeNvV63J5ezn3uZzapT0u7EYsXMjQV+0En5r" crossorigin="anonymous">
+    <title>ShuZhou --- LiaoYuan</title>
+</head>
+<body>
+<div class="panel panel-default" ng-controller="MainController as model">
+    <div class="panel-body">
+        <div class="jumbotron">
+            <h1 align="center">员工收入计算器</h1>
+            <br>
+            <div class="row">
+                <div class="col-md-10 col-md-offset-1">
+                    <div class="well well-lg">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="input-group">
+                                    <span class="input-group-addon">姓名</span>
+                                    <input type="text" class="form-control" aria-describedby="sizing-addon2" ng-model="model.curEmployee.name">
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="input-group">
+                                    <span class="input-group-addon">岗位工资</span>
+                                    <input type="text" class="form-control" aria-describedby="sizing-addon2" ng-model="model.curEmployee.salary">
+                                </div>
+                            </div>
+                        </div>
+                        <br>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="input-group">
+                                    <span class="input-group-addon">公积金比例 (0.00 ~ 0.08)</span>
+                                    <input type="text" class="form-control" aria-describedby="sizing-addon2" ng-model="model.curEmployee.rate">
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="input-group">
+                                    <span class="input-group-addon">输入绩效评分 (A,B,C,D)</span>
+                                    <input type="text" class="form-control" aria-describedby="sizing-addon2" ng-model="model.curEmployee.level">
+                                </div>
+                            </div>
+                        </div>
+                        <br>
+                        <div class="row">
+                            <div class="col-md-5 col-md-offset-10">
+                                <button type="button" class="btn btn-primary" ng-click="model.calSingleTax()">计算明细</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <br>
+                <div class="col-md-10 col-md-offset-1">
+                    <div class="well well-lg">
+                        <div class="row">
+                            <div align="center">
+                                <h3>.CSV数据文件提交</h3>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="btn btn-primary" for="my-file-selector">
+                                    <input id="my-file-selector" type="file" style="display:none;" onchange="$('#upload-file-info').html($(this).val());">
+                                    Upload Employee Info (.csv)
+                                </label>
+                                <span class='label label-info' id="upload-file-info">File Name</span>
+                            </div>
+                            <div class="col-md-3 col-md-offset-10">
+                                <button type="button" class="btn btn-primary" ng-click="model.uploadCSV()">计算文件</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <br>
+                <div class="col-md-10 col-md-offset-1">
+                    <div class="well well-lg">
+                        <div class="row">
+                            <div align="center">
+                                <h2>员工收入明细</h2>
+                            </div>
+                            <div class="col-md-3 col-md-offset-10">
+                                <button type="button" class="btn btn-primary" ng-click="model.cleanEmployeeList()">清空数据</button>
+                            </div>
+                        </div>
+                        <br>
+                        <div>
+                            <div class="container">
+                                <form class="form-horizontal">
+                                    <div class="table-responsive">
+                                        <table class="table table-bordered table-striped table-highlight">
+                                            <thead>
+                                            <th>姓名</th>
+                                            <th>岗位工资</th>
+                                            <th>绩效工资</th>
+                                            <th>五险一金(个人)</th>
+                                            <th>五险一金(单位)</th>
+                                            <th>税前收入</th>
+                                            <th>扣税</th>
+                                            <th>税后收入</th>
+                                            </thead>
+                                            <tbody>
+                                            <tr ng-repeat="employee in model.employees">
+                                                <td>{{employee.name}}</td>
+                                                <td>{{employee.salary}}</td>
+                                                <td>{{employee.rewardmoney}}</td>
+                                                <td>
+                                                    <ul>
+                                                        <li>养老保险(个) : {{employee.personalyanglao}}</li>
+                                                        <li>医疗保险(个) : {{employee.personalyiliao}}</li>
+                                                        <li>失业保险(个) : {{employee.personalshiye}}</li>
+                                                        <li>生育保险(个) : {{employee.personalshengyu}}</li>
+                                                        <li>工伤保险(个) : {{employee.personalgongshang}}</li>
+                                                        <li>住房公积金(个) : {{employee.personalzhufang}}</li>
+                                                        <li>合计 : {{employee.personaltotal}}</li>
+                                                    </ul>
+                                                </td>
+                                                <td>
+                                                    <ul>
+                                                        <li>养老保险(公) : {{employee.companyyanglao}}</li>
+                                                        <li>医疗保险(公) : {{employee.companyyiliao}}</li>
+                                                        <li>失业保险(公) : {{employee.companyshiye}}</li>
+                                                        <li>生育保险(公) : {{employee.companyshengyu}}</li>
+                                                        <li>工伤保险(公) : {{employee.companygongshang}}</li>
+                                                        <li>住房公积金(公) : {{employee.companyzhufang}}</li>
+                                                        <li>合计 : {{employee.companytotal}}</li>
+                                                    </ul>
+                                                </td>
+                                                <td>{{employee.befortax}}</td>
+                                                <td>{{employee.personaltax}}</td>
+                                                <td>{{employee.aftertax}}</td>
+                                            </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="//code.jquery.com/jquery-2.1.4.min.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.11.4/jquery-ui.min.js"></script>
+<!-- Latest compiled and minified JavaScript -->
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"
+        integrity="sha384-0mSbJDEHialfmuBBQP6A4Qrprq5OVfW37PRR3j5ELqxss1yVqOtnepnHVP9aJ7xS"
+        crossorigin="anonymous"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.9/angular.min.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.9/angular-route.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/4.1.2/papaparse.min.js"></script>
+<script src="app.js"></script>
+<script src="config.js"></script>
+<script src="main.contorller.js"></script>
+<script src="main.service.js"></script>
+</body>
+</html>
